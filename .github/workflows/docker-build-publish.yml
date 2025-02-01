@@ -1,0 +1,51 @@
+name: Build and publish Docker image
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:  # allow manual triggers
+
+jobs:
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Extract project version
+        id: extract-project-version
+        run: |
+          version=$(grep -Po '(?<=^version = ")[^"]+' pyproject.toml)
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+      - name: Log in to docker hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile_open3e
+          push: true
+          tags: |
+            lgraf/open3e:latest
+            lgraf/open3e:${{ env.VERSION }}
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
