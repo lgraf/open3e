@@ -153,6 +153,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
       - name: Build and push docker image
         env:
           BUILD_VERSION: ${{needs.python-build.outputs.build_version}}
@@ -161,9 +167,8 @@ jobs:
           context: .
           file: docker/Dockerfile_open3e
           push: true
-          tags: |
-            lgraf/open3e:latest
-            lgraf/open3e:${{ env.BUILD_VERSION }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
