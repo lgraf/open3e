@@ -1,0 +1,62 @@
+name: Build and publish open3e distribution
+
+on:
+  push:
+    # TODO: restrict branches?
+    #branches:
+    #  - master
+
+jobs:
+  python-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install pypa/build
+        run: >-
+          python3 -m
+          pip install
+          build
+          --user
+
+      - name: Build a binary wheel and a source tarball
+        run: python3 -m build
+
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  pypi-publish:
+    runs-on: ubuntu-latest
+
+    # TODO: define when to publish? for example using git tags
+    if: github.ref == 'refs/heads/automated-build-publish'
+
+    permissions:
+      id-token: write # https://docs.pypi.org/trusted-publishers/
+
+    needs:
+      - python-build
+
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # TODO: switch to pypi.org for release builds. use test.pypi for non release builds?
+          repository-url: https://test.pypi.org/legacy/
