@@ -163,6 +163,14 @@ jobs:
           # TODO: switch to pypi.org for release builds. use test.pypi for non release builds?
           repository-url: https://test.pypi.org/legacy/
 
+      - name: Wait for package to become available
+        uses: databutton/wait-for-pypi-action@7577e731d445ff9520bff7b8feda31ea12d93b52
+        with:
+          package_name: open3e-lgraf
+          package_version: ${{needs.pre-release-check.outputs.build_version}}
+          timeout: 120
+          delay_between_requests: 10
+
   docker-build-and-push:
     if: needs.pre-release-check.outputs.release_required == 'true'
 
@@ -208,7 +216,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: docker/Dockerfile_open3e
+          build-args: VERSION=${{needs.pre-release-check.outputs.build_version}}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
