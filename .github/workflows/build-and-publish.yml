@@ -163,13 +163,21 @@ jobs:
           # TODO: switch to pypi.org for release builds. use test.pypi for non release builds?
           repository-url: https://test.pypi.org/legacy/
 
-      - name: Wait for package to become available
-        uses: databutton/wait-for-pypi-action@7577e731d445ff9520bff7b8feda31ea12d93b52
-        with:
-          package_name: open3e-lgraf
-          package_version: ${{needs.pre-release-check.outputs.build_version}}
-          timeout: 120
-          delay_between_requests: 10
+      - name: Check if PyPi release is available
+        run: |
+          PACKAGE_NAME="open3e-lgraf"
+          PACKAGE_VERSION="${{ needs.pre-release-check.outputs.build_version }}"
+          for i in {1..10}; do
+            if [ "$(curl -s -o /dev/null -I -w "%{http_code}" "https://test.pypi.org/pypi/${PACKAGE_NAME}/${PACKAGE_VERSION}/json")" == "200" ]; then
+              echo "Release is available on PyPI, proceeding ...";
+              exit 0;
+            fi;
+            echo "Package not found. Retrying in 30 seconds...";
+            sleep 30;
+          done;
+          echo "Release did not appear on PyPI in time.";
+          exit 1;
+
 
   docker-build-and-push:
     if: needs.pre-release-check.outputs.release_required == 'true'
