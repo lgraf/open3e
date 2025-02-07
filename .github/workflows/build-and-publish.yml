@@ -2,8 +2,8 @@ name: Build and publish open3e distribution
 
 on:
   push:
-    branches:
-      - master
+    #branches:
+    #  - master
 
 env:
   REGISTRY: ghcr.io
@@ -161,6 +161,7 @@ jobs:
         with:
           # TODO: switch to pypi.org for release builds. use test.pypi for non release builds?
           repository-url: https://test.pypi.org/legacy/
+          verbose: true
 
       - name: Check if PyPi release is available
         run: |
