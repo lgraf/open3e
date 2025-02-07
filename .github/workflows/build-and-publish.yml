@@ -2,9 +2,8 @@ name: Build and publish open3e distribution
 
 on:
   push:
-    # TODO: restrict branches?
-    #branches:
-    #  - master
+    branches:
+      - master
 
 env:
   REGISTRY: ghcr.io
