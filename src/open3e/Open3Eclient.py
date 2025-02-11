@@ -18,6 +18,7 @@ import argparse
 import time
 import json
 from importlib.metadata import version
+from open3e._version import __git_ref__
 import paho.mqtt.client as paho
 from udsoncan.exceptions import *
 from os import path
@@ -362,13 +363,18 @@ def main():
             print(f"{s}: {ecu}.{did} = {val}")
         else:
             print(f"{s}: {ecu}.{did}.{sub} = {val}")
-        
+
+    def get_full_version_string():
+        package_name = "open3e"
+        package_version = version(package_name)
+        git_ref = __git_ref__
+
+        return f'{package_version} ({git_ref})'
+
     #~~~~~~~~~~~~~~~~~~~~~~
     # Main
     #~~~~~~~~~~~~~~~~~~~~~~
-    package_name = "open3e"
-
-    parser = argparse.ArgumentParser(fromfile_prefix_chars='@', epilog=f'open3e {version(package_name)}')
+    parser = argparse.ArgumentParser(fromfile_prefix_chars='@', epilog=f'open3e {get_full_version_string()}')
     parser.add_argument("-c", "--can", type=str, help="use can device, e.g. can0")
     parser.add_argument("-d", "--doip", type=str, help="use doip access, e.g. 192.168.1.1")
     parser.add_argument("-dev", "--dev", type=str, help="boiler type --dev vdens or --dev vcal || pv/battery --dev vx3")
