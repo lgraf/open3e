@@ -362,7 +362,7 @@ def main():
         else:
             print(f"{s}: {ecu}.{did}.{sub} = {val}")
 
-    def get_full_version_string():
+    def get_package_version_string():
         package_name = "open3e"
 
         try:
@@ -382,7 +382,7 @@ def main():
     #~~~~~~~~~~~~~~~~~~~~~~
     # Main
     #~~~~~~~~~~~~~~~~~~~~~~
-    help_version_string = get_full_version_string()
+    help_version_string = get_package_version_string()
 
     parser = argparse.ArgumentParser(fromfile_prefix_chars='@', epilog=f'open3e {help_version_string}')
     parser.add_argument("-c", "--can", type=str, help="use can device, e.g. can0")
