@@ -11,3 +11,49 @@ on:
 jobs:
   run-tests:
     uses: ./.github/workflows/test.yml
+
+  pre-release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    needs: run-tests
+
+    outputs:
+      release_version: ${{ github.event.inputs.release_version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install toml-cli for TOML parsing
+        run: pip install toml-cli
+
+      - name: Get project version for sanity check
+        id: project-version
+        run: |
+          PROJECT_VERSION=$(toml get --toml-path pyproject.toml project.version)
+          echo "current project version: '${PROJECT_VERSION}'"
+
+          # make the project version available to the next steps
+          echo "PROJECT_VERSION=${PROJECT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Sanity check for provied release version, to ensure proper versioning
+        env:
+          RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+          PROJECT_VERSION: ${{ steps.project-version.outputs.PROJECT_VERSION }}
+        shell: python
+        run: |
+          from packaging.version import Version
+          import os, sys
+
+          release_version = os.getenv("RELEASE_VERSION")
+          project_version = os.getenv("PROJECT_VERSION")
+
+          release_valid = Version(release_version) == Version(project_version)
+          if not release_valid:
+              print(f"Provided release version {release_version} is not equal to project version {project_version}, aborting release ...")
+              sys.exit(1)
