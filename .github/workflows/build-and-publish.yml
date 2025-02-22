@@ -1,3 +1,5 @@
+# Note: renaming the workflow filename (build-and-publish.yml) will break pypi trusted publishing
+# SEE: https://docs.pypi.org/trusted-publishers/security-model/#github-actions
 name: Build and publish
 
 on:
@@ -88,3 +90,26 @@ jobs:
         with:
           name: python-package-distributions
           path: dist/
+
+  pypi-publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write # https://docs.pypi.org/trusted-publishers/
+
+    needs:
+      - python-build
+
+    steps:
+      - name: Download python distribution packages
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # TODO: switch to pypi.org for release builds. use test.pypi for non release builds?
+          repository-url: https://test.pypi.org/legacy/
+          verbose: true
