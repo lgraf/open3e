@@ -57,3 +57,34 @@ jobs:
           if not release_valid:
               print(f"Provided release version {release_version} is not equal to project version {project_version}, aborting release ...")
               sys.exit(1)
+
+  python-build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    needs:
+      - pre-release
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python to avoid version conflicts with default runner python installation
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install build frontend for building python distributions
+        run: pip install build --user
+
+      - name: Build python distribution packages
+        run: python3 -m build
+
+      - name: Store distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
