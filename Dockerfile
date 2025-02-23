@@ -8,7 +8,7 @@ COPY ./dist/ ./dist/
 RUN python -m venv /open3e/.venv
 
 ENV PATH="/open3e/.venv/bin:$PATH"
-RUN pip install --find-links=./dist/ open3e
+RUN pip install --find-links=./dist/ open3e-test
 
 
 FROM python:3.13-alpine
