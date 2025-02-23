@@ -40,7 +40,7 @@ readme = "README.md"
 license = { file = "LICENSE.txt" }
 requires-python = ">=3.9"
 classifiers = [
-  "License :: OSI Approved ::Apache Software License",
+  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python"
 ]
 keywords = ["E3", "CAN", "communication"]
