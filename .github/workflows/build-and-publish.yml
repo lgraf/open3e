@@ -104,6 +104,7 @@ jobs:
       id-token: write # https://docs.pypi.org/trusted-publishers/
 
     needs:
+      - pre-release
       - python-build
 
     steps:
@@ -183,3 +184,24 @@ jobs:
           subject-name: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME}}
           subject-digest: ${{ steps.docker-push.outputs.digest }}
           push-to-registry: true
+
+  github-release:
+    runs-on: ubuntu-latest
+
+    needs:
+      - pre-release
+      - python-build
+
+    permissions:
+      contents: write  # create gh release
+
+
+    steps:
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.pre-release.outputs.release_version }} # use recommended tag versioning format (vX.Y.Z)
+          name: ${{ needs.pre-release.outputs.release_version }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
