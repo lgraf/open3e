@@ -5,6 +5,7 @@ on:
     branches:
       - develop      
       - master
+      - version-info-with-tests
   pull_request:
     branches:
       - develop
@@ -16,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
       max-parallel: 3
     name: Python ${{ matrix.python-version }}
     steps:
