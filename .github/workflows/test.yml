@@ -31,6 +31,8 @@ jobs:
         run: pip --version
       - name: installation
         run: pip install .[dev]
+      - name: smoke test
+        run: open3e --help
       - name: test
         run: python -m pytest --cov
   editable-install-test:
