@@ -15,7 +15,7 @@ FROM python:3.13-alpine
 
 COPY --from=builder /open3e /open3e
 
-WORKDIR /open3e
-ENV PATH="/open3e/.venv/bin:$PATH"
+WORKDIR /open3e-data
 
+ENV PATH="/open3e/.venv/bin:$PATH"
 ENTRYPOINT ["open3e"]
