@@ -17,5 +17,6 @@ COPY --from=builder /open3e /open3e
 
 WORKDIR /open3e-data
 
+ENV PYTHONUNBUFFERED=1
 ENV PATH="/open3e/.venv/bin:$PATH"
 ENTRYPOINT ["open3e"]
