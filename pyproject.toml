@@ -37,10 +37,10 @@ version = "0.5.4"
 description = "Connects to E3 (vcal, vdens, vx3...) controllers via CAN or DOIP (UDS)."
 authors = [{ name = "The open3e authors" }]
 readme = "README.md"
-license = { file = "LICENSE.txt" }
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.9"
 classifiers = [
-  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python"
 ]
 keywords = ["E3", "CAN", "communication"]
