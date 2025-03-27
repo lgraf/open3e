@@ -16,16 +16,11 @@ env:
 
 
 jobs:
-  run-tests:
-    uses: ./.github/workflows/test.yml
-
   pre-release:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
-
-    needs: run-tests
 
     outputs:
       release_version: ${{ github.event.inputs.release_version }}
@@ -64,6 +59,11 @@ jobs:
           if not release_valid:
               print(f"Provided release version {release_version} is not equal to project version {project_version}, aborting release ...")
               sys.exit(1)
+
+  run-tests:
+    needs: pre-release
+
+    uses: ./.github/workflows/test.yml
 
   python-build:
     runs-on: ubuntu-latest
